@@ -1,0 +1,27 @@
+FROM php:8.2-fpm
+
+# Install required extensions and dependencies
+RUN apt-get update && apt-get install -y \
+        libfreetype6-dev \
+        libjpeg62-turbo-dev \
+        libpng-dev \
+        libwebp-dev \
+        libxpm-dev \
+        libssl-dev \
+        libonig-dev \
+        curl \
+        libpq-dev \
+        libmemcached-dev \
+    && docker-php-ext-configure gd \
+        --with-freetype \
+        --with-jpeg \
+        --with-webp \
+        --with-xpm \
+    && docker-php-ext-install -j$(nproc) gd mysqli pdo_mysql pdo_pgsql \
+    && rm -rf /var/lib/apt/lists/*
+
+# Set working directory
+WORKDIR /var/www/html
+
+# Start PHP-FPM
+CMD ["php-fpm"]
